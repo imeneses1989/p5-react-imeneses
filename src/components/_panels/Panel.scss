@@ -1,0 +1,110 @@
+.property-panel {
+  position: absolute;
+  width: 220px;
+  top: 0;
+  left: 0;
+  padding: 0 5px 6px 5px;
+  font-family: "Lucida Grande", sans-serif;
+  font-size: 11px;
+}
+
+.property-group {
+  background-color: #f1f1f1;
+  overflow: hidden;
+  padding-bottom: 12px;
+  padding-top: 2px;
+  padding-left: 10px;
+  border: 0px solid #d3d3d3;
+  margin-bottom: 5px;
+}
+
+.input-helper {
+  font-size: 9px;
+  color: #d2d2d2;
+  padding-top: 2px;
+  padding-left: 5px;
+}
+
+.inline-input-helper {
+  font-size: 9px;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.panel-title {
+  float: left;
+  width: 60px;
+  padding: 3px;
+  color: #b8b8b8;
+}
+
+.columns {
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.column {
+  float: left;
+  margin-right: 5px;
+}
+
+.input-decorator {
+  background: #e1e1e1;
+  border-width: 0;
+  padding: 3px 5px;
+  color: gray;
+  border-radius: 3px;
+}
+
+.select-decorator {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-width: 0;
+  padding: 3px 3px 3px 5px;
+  outline: none;
+  border-radius: 0;
+  border-right: 3px solid #b7b7b7;
+  color: gray;
+  width: 75px;
+}
+
+.integer-input {
+  width: 50px;
+  outline: none;
+}
+
+.text-input {
+  margin-top: 2px;
+  outline: none;
+  width: 100%;
+  padding: 3px;
+}
+
+.color-input {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-block;
+  background: white;
+  margin-right: 3px;
+}
+
+.color {
+  margin-left: 2px;
+  margin-top: 2px;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.empty {
+  display: none;
+}
+
+.button-decorator {
+  color: #515151;
+  text-decoration: none;
+  display: block;
+  padding: 2px 0;
+}

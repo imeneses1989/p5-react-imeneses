@@ -1,0 +1,34 @@
+.insert-menu {
+  position: absolute;
+  margin-top: 0;
+  margin-left: -40px;
+  height: 40px;
+  width: 40px;
+  overflow: hidden;
+  &:hover {
+    background: #eeeff5;
+    height: auto;
+  }
+}
+
+.tool-box {
+  margin: 0;
+  padding: 0;
+}
+
+.tool-box-item {
+  list-style: none;
+  padding: 5px 5px;
+  &:hover {
+    background: #ebebeb;
+  }
+}
+
+.current-toolbox-item {
+  background: #ebebeb;
+}
+
+.main-icon {
+  padding: 10px 5px;
+  border-bottom: 1px solid #e0e0e0;
+}

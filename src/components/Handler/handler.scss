@@ -1,0 +1,30 @@
+.handler {
+  position: absolute;
+  border: 2px solid #dedede;
+  z-index: 999999;
+}
+
+.anchor {
+  width: 10px;
+  height: 10PX;
+  &:hover {
+    border-color: gray;
+  }
+},
+
+.scale-anchor {
+  margin-top: -3px;
+  border-right: 2px solid #dedede;
+  border-bottom: 2px solid #dedede;
+  position: absolute;
+  z-index: -1;
+}
+
+.rotate-anchor {
+  margin-top: -8px;
+  border-right: 2px solid #dedede;
+  border-top: 2px solid #dedede;
+  position: absolute;
+  border-top-right-radius: 3px;
+  z-index: -1;
+}
