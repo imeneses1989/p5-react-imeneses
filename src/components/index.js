@@ -8,6 +8,8 @@ import Handler from 'Handler';
 import Icon from 'Icon';
 import Preview from 'Preview';
 import SVGRenderer from 'SVGRenderer';
+import SafeZone from 'SafeZone';
 
+import Round from 'src/components/Round';
 
-export default {actions, editors, objects, panels, Designer, Handler, Icon, Preview, SVGRenderer};
+export default {actions, editors, objects, panels, Designer, Handler, Icon, Preview, SVGRenderer, SafeZone, Round};

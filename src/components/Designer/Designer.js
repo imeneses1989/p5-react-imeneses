@@ -11,6 +11,7 @@ import Handler from '@od/react-preview/Handler';
 import {Dragger, Rotator, Scaler} from '@od/react-preview/_actions';
 import {Text, Path, Rect, Circle, Image} from '@od/react-preview/_objects';
 import PanelList from '@od/react-preview/_panels/PanelList';
+import SafeZone from '@od/react-preview/SafeZone';
 
 class Designer extends React.Component {
     static defaultProps = {
@@ -23,7 +24,11 @@ class Designer extends React.Component {
         },
         snapToGrid: 1,
         svgStyle: {},
-        insertMenu: InsertMenu
+        insertMenu: InsertMenu,
+        safeZone: {
+            offset: {left: 10, right: 10, top: 10, bottom: 10},
+            strokeStyle: {stroke: '#006600', strokeWidth: 2}
+        }
     };
 
     constructor(props) {
@@ -39,7 +44,8 @@ class Designer extends React.Component {
             },
             currentObjectIndex: null,
             selectedObjectIndex: null,
-            selectedTool: null
+            selectedTool: null,
+            displaySafeZoneWarning: false
         }
     }
 
@@ -74,7 +80,7 @@ class Designer extends React.Component {
         let {objects} = this.props;
         let object = objects[index];
 
-        if (mode !== modes.FREE) {
+        if (mode !== modes.FREE || object.isclosed) {
             return;
         }
 
@@ -181,7 +187,7 @@ class Designer extends React.Component {
     };
 
     updateObject = (objectIndex, changes, updatePath) => {
-       let {objects, onUpdate} = this.props;
+        let {objects, onUpdate} = this.props;
 
         onUpdate(objects.map((object, index) => {
             if (index === objectIndex) {
@@ -232,7 +238,7 @@ class Designer extends React.Component {
             rotate: object.rotate
         };
 
-        if (!object.width) {
+        if (!object.width || !object.height) {
             let offset = this.getOffset();
             handler = {
                 ...handler,
@@ -267,6 +273,7 @@ class Designer extends React.Component {
         let {currentObjectIndex, startPoint, mode} = this.state;
         let {objects} = this.props;
         let object = objects[currentObjectIndex];
+
         let mouse = this.getMouseCoords(event);
 
         let map = {
@@ -277,7 +284,7 @@ class Designer extends React.Component {
 
         let action = map[mode];
 
-        if (action) {
+        if (action && !object.isclosed) {
             let newObject = action({
                 object,
                 startPoint,
@@ -292,6 +299,23 @@ class Designer extends React.Component {
 
         if (currentObjectIndex !== null) {
             this.detectOverlappedObjects(event);
+            this.validateSafeZone();
+        }
+    };
+
+    validateSafeZone = () => {
+        let {currentObjectIndex} = this.state;
+        let {objects, safeZone, width, height} = this.props;
+        let currentObject = objects[currentObjectIndex];
+        let currentRect = this.objectRefs[currentObjectIndex].getBoundingClientRect();
+
+        if( (currentObject.x < safeZone.offset.left) ||
+            (currentObject.x + currentRect.width > (width - safeZone.offset.right)) ||
+            ((currentObject.y) < safeZone.offset.top) ||
+            (currentObject.y + currentRect.height> height - safeZone.offset.bottom)) {
+            this.setState({displaySafeZoneWarning: true});
+        } else if(this.state.displaySafeZoneWarning){
+            this.setState({displaySafeZoneWarning: false});
         }
     };
 
@@ -390,8 +414,21 @@ class Designer extends React.Component {
                 objectTypes={objectTypes}
                 objectRefs={this.objectRefs}
                 onRender={(ref) => this.svgElement = ref}
-                onMouseDown={this.newObject.bind(this)} />
+                onMouseDown={this.newObject.bind(this)} >
+                <SafeZone width={width}
+                          height={height}
+                          offset={this.props.safeZone.offset}
+                          strokestyle={this.props.safeZone.strokeStyle}
+                          onRender={(ref) => this.safeZoneElement = ref}/>
+            </SVGRenderer>
         );
+    };
+
+    getSVGElement = () => {
+        let sbgElement = this.svgElement;
+        let safeZoneObj = sbgElement.getElementById('svgSafeZone');
+        sbgElement.removeChild(safeZoneObj);
+        return sbgElement;
     };
 
     selectTool = (tool) => {
@@ -548,6 +585,12 @@ class Designer extends React.Component {
                 keyMap={this.keyMap}
                 style={styles.keyboardManager}
                 handlers={this.getKeymapHandlers()}>
+                <div style={{height: 20}}>
+                    {this.state.displaySafeZoneWarning &&
+                        <span>NOTICE: Content is outside the printable area! Adjust your content so that it is inside the safe zone.</span>
+                    }
+                </div>
+
                 <div className={'container'}
                      style={{
                          ...styles.container,
@@ -574,11 +617,13 @@ class Designer extends React.Component {
                             canResize={has(currentObject, 'width') ||
                             has(currentObject, 'height')}
                             canRotate={has(currentObject, 'rotate')}
+                            isIncrease={!has(currentObject, 'height')}
                             onMouseLeave={this.hideHandler}
                             onDoubleClick={this.showEditor}
                             onDrag={this.startDrag.bind(this, modes.DRAG)}
                             onResize={this.startDrag.bind(this, modes.SCALE)}
-                            onRotate={this.startDrag.bind(this, modes.ROTATE)} /> )}
+                            onRotate={this.startDrag.bind(this, modes.ROTATE)}
+                            onIncrease={this.startDrag.bind(this, modes.INCREASE)}/> )}
 
                     {InsertMenuComponent && (
                         <InsertMenuComponent tools={objectTypes}

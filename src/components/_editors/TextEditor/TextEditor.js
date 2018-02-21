@@ -14,18 +14,12 @@ class TextEditor extends React.Component {
     }
 
     componentDidMount() {
-        /*this.textInput.focus();
-        let txtLength = this.props.object.text.length;
-        this.textInput.setSelectionRange(txtLength, txtLength);*/
-
         this.textArea.focus();
         let txtLength = this.props.object.text.length;
         this.textArea.setSelectionRange(txtLength, txtLength);
     }
 
     onFocusOut = () => {
-        var arrayOfLines = this.textArea.value.split("\n");
-        console.log(arrayOfLines);
         this.props.onChange('text', this.textArea.value);
         this.props.onClose();
     };
@@ -37,7 +31,7 @@ class TextEditor extends React.Component {
     render() {
         let {object, width, height} = this.props;
         let styles = {
-            fontSize: parseInt(object.fontSize),
+            fontSize: parseInt(object.fontSize, 10),
             height: 'auto',
             fontFamily: object.fontFamily,
             fontWeight: object.fontWeight,
@@ -57,10 +51,6 @@ class TextEditor extends React.Component {
             <div className="canvas"
                  onKeyPress={this.onKeyPress}>
                 <svg style={{width, height}}></svg>
-              {/*  <input onBlur={this.onFocusOut}
-                       ref={(input) => {this.textInput = input}}
-                       onChange={(e) => this.props.onChange('text', e.target.value)}
-                       value={object.text} style={styles}/>*/}
                 <textarea rows="4" cols="50"
                           onChange={(e) => this.updateState(e.target.value)}
                           onBlur={this.onFocusOut}

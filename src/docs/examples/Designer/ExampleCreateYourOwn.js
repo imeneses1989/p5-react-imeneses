@@ -9,6 +9,10 @@ export default class extends React.Component {
         this.state = {
             objects: [],
             showPreview: false,
+            productWidth: 600,
+            productHeight: 600,
+            productRealWidth: '36in',
+            productRealHeight: '48in',
             previews: [{
                 styles: {
                     backgroundColor: 'red',
@@ -32,14 +36,12 @@ export default class extends React.Component {
     };
 
     download = (event) => {
-        let realWidth = '36in';
-        let realHeight = '48in';
         event.preventDefault();
-        let svgElement = this.designer.svgElement;
+        let svgElement = this.designer.getSVGElement();
         svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        svgElement.setAttribute("width", realWidth);
-        svgElement.setAttribute("height", realHeight);
-        svgElement.setAttribute("viewBox", "0 0 318 424");
+        svgElement.setAttribute("width", this.state.productRealWidth);
+        svgElement.setAttribute("height", this.state.productRealHeight);
+        svgElement.setAttribute("viewBox", "0 0 " + this.state.productWidth + " " + this.state.productHeight + "");
         svgElement.setAttribute("xml:space", "preserve");
         svgElement.setAttribute("preserveAspectRatio", "none");
         let source = svgElement.outerHTML;
@@ -66,13 +68,16 @@ export default class extends React.Component {
     };
 
     render() {
+
+
         return (
             <div>
                 <Designer
                     ref={(ref) => this.designer = ref}
-                    width={350} height={400}
+                    width={600} height={600}
                     objects={this.state.objects}
-                    onUpdate={this.handleUpdate}/>
+                    onUpdate={this.handleUpdate}
+                    />
                 <p>
                     <a href="#" style={{marginRight: 10, display: 'inline-block'}} onClick={this.seePreview}>{this.state.showPreview ? 'Hide' : 'Show'} Preview</a>
                     <a href="#" onClick={this.download}>Export SVG</a>

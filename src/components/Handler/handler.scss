@@ -28,3 +28,19 @@
   border-top-right-radius: 3px;
   z-index: -1;
 }
+
+.increase-anchor {
+  border-right: 2px solid #dedede;
+  border-top: 2px solid #dedede;
+  position: absolute;
+  border-top-right-radius: 3px;
+  transform: translateX(70%) rotate(50deg);
+  transform-origin: center top;
+  z-index: -1;
+}
+.rotation-label {
+  position: relative;
+  font-size: 11px;
+  top: -10px;
+  left: 15px;
+}

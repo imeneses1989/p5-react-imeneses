@@ -1,14 +1,16 @@
 import React from 'react';
+import Round from '@od/react-preview/Round';
 
 function ScaleAnchor(props) {
     let {boundingBox} = props;
     let style = {
-        marginTop: boundingBox.height - 4,
+        marginTop: props.isIncrease ? (props.boundingBox.height / 2) - 3 : boundingBox.height - 4,
         marginLeft: boundingBox.width - 4
     };
+
     return (
         <div style={style}
-             className='resize-anchor anchor scale-anchor'
+             className={'anchor ' + (props.isIncrease ? 'increase-anchor' : 'resize-anchor scale-anchor')}
              onMouseDown={props.onMouseDown} />
     );
 };
@@ -19,8 +21,12 @@ function RotateAnchor(props) {
     };
     return (
         <div style={style}
-             className={'rotate-anchor anchor rotate-anchor'}
-             onMouseDown={props.onMouseDown} />
+             className={'rotate-anchor anchor'}
+             onMouseDown={props.onMouseDown} >
+            {props.boundingBox.rotate !==0 &&
+                <Round number={props.boundingBox.rotate} precision="2" className="rotation-label"></Round>
+            }
+        </div>
     )
 };
 
@@ -56,7 +62,8 @@ class Handler extends React.Component {
                               boundingBox={boundingBox} />}
                 {props.canResize &&
                 <ScaleAnchor onMouseDown={props.onResize}
-                             boundingBox={boundingBox} />}
+                             boundingBox={boundingBox}
+                             isIncrease={props.isIncrease}/>}
             </div>
         );
     }

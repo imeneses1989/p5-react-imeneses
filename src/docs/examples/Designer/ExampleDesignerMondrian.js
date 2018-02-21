@@ -16,7 +16,8 @@ export default class extends React.Component {
                 "blendmode": "normal",
                 "type": "rectangle",
                 "x": 17,
-                "y": 15
+                "y": 15,
+                "isclosed": "true"
             }, {
                 "width": 70,
                 "height": 146,

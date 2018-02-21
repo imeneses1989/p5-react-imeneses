@@ -6,9 +6,6 @@ import Vector from '@od/react-preview/_objects/Vector';
 import TextEditor from '@od/react-preview/_editors/TextEditor';
 
 export default class Text extends Vector {
-    static defaultProps = {
-       width: 25
-    };
     static meta = {
         icon: <Icon icon={'text'} size={30} />,
         initial: {
@@ -20,7 +17,9 @@ export default class Text extends Vector {
             fill: "black",
             fontSize: 50,
             fontFamily: "Helvetica",
-            lineheight: 1
+            lineheight: 1,
+            width: 250,
+            dominantBaseline: "hanging"
         },
         mode: modes.FREE,
         editor: TextEditor,
@@ -40,15 +39,15 @@ export default class Text extends Vector {
     }
 
     componentDidUpdate(nextProps) {
-        if (this.props.children != nextProps.children) {
+        if (this.props.children !== nextProps.children) {
             const { wordsWithComputedWidth, spaceWidth } = this.calculateWordWidths();
             this.wordsWithComputedWidth = wordsWithComputedWidth;
             this.spaceWidth = spaceWidth;
         }
 
-        const lines = this.calculateLines(this.wordsWithComputedWidth, this.spaceWidth, this.props.width);
+        const lines = this.calculateLines(this.wordsWithComputedWidth, this.spaceWidth, this.props.object.width);
         const newLineAdded = this.state.lines.length !== lines.length;
-        const wordMoved = this.state.lines.some((line, index) => line.length != lines[index].length);
+        const wordMoved = this.state.lines.some((line, index) => line.length !== lines[index].length);
         // Only update if number of lines or length of any lines change
         if (newLineAdded || wordMoved) {
             this.setState({ lines: lines })
@@ -57,7 +56,7 @@ export default class Text extends Vector {
 
     componentWillReceiveProps(nextProps) {
 
-        if(this.props.object.text != nextProps.object.text) {
+        if((this.props.object.text !== nextProps.object.text) || (this.props.object.width !== nextProps.object.width)) {
             this.getLines(nextProps.object.text);
         }
     }
@@ -67,7 +66,7 @@ export default class Text extends Vector {
         const { wordsWithComputedWidth, spaceWidth } = this.calculateWordWidths(textToUse);
         this.wordsWithComputedWidth = wordsWithComputedWidth;
         this.spaceWidth = spaceWidth;
-        const lines = this.calculateLines(this.wordsWithComputedWidth, this.spaceWidth, this.props.width);
+        const lines = this.calculateLines(this.wordsWithComputedWidth, this.spaceWidth, this.props.object.width);
         this.setState({ lines: lines, text: textToUse});
      };
 
@@ -75,7 +74,7 @@ export default class Text extends Vector {
         let {object} = this.props;
         return {
             ...this.getStyle(),
-            dominantBaseline: "central",
+            dominantBaseline: "hanging",
             fontWeight: object.fontWeight,
             fontStyle: object.fontStyle,
             textDecoration: object.textDecoration,
@@ -94,7 +93,13 @@ export default class Text extends Vector {
         const words = textToSplit.split(/\s+/);
         var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        Object.assign(text.style, this.props.style);
+
+        let styles= {
+            ...this.getStyles(),
+            ...{fontSize: this.props.object.fontSize},
+            ...{fontFamily: this.props.object.fontFamily}
+        };
+        Object.assign(text.style, styles);
         svg.appendChild(text);
         document.body.appendChild(svg);
 
@@ -104,6 +109,7 @@ export default class Text extends Vector {
         });
 
         text.textContent = '\u00A0'; // Unicode space
+
         const spaceWidth = text.getComputedTextLength();
 
         document.body.removeChild(svg);
@@ -112,9 +118,10 @@ export default class Text extends Vector {
     }
 
     calculateLines(wordsWithComputedWidth, spaceWidth, lineWidth) {
+
         const wordsByLines = wordsWithComputedWidth.reduce((result, { word, width}) => {
-            debugger;
-            const lastLine = result[result.length - 1] || { words: [], width: 0 };
+
+             const lastLine = result[result.length - 1] || { words: [], width: 0 };
 
             if (lastLine.words.length === 0) {
                 // First word on line
@@ -140,9 +147,8 @@ export default class Text extends Vector {
         let {object, index} = this.props;
 
         return (
-            <text style={this.getStyles()}
-                  {...this.getObjectAttributes()}
-                  textAnchor="right"
+            <text {...this.getObjectAttributes()}
+                  textAnchor="start"
                   fontSize={object.fontSize}
                   fontFamily={object.fontFamily}>
                 {this.state.lines.map((word, index) => (

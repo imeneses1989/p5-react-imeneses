@@ -89,7 +89,6 @@ class BezierEditor extends React.Component {
         }
 
         if (mode === 'source') {
-            console.log("source");
             this.updateCurrentPath({
                 x1: mouse.x,
                 y1: mouse.y,
@@ -101,8 +100,7 @@ class BezierEditor extends React.Component {
         }
 
         if (mode === 'target') {
-            console.log("target");
-            this.updateCurrentPath({
+           this.updateCurrentPath({
                 x2: x,
                 y2: y,
                 x: x,
@@ -111,19 +109,16 @@ class BezierEditor extends React.Component {
         }
 
         if (mode === 'connect') {
-            console.log("connect");
-            this.updateCurrentPath({x, y})
+           this.updateCurrentPath({x, y})
         }
 
         if (mode === 'target' || mode === 'connect') {
-            console.log("target, connect");
             this.setState({
                 closePath: snapToInitialVertex
             });
         }
 
         if (mode === 'move') {
-            console.log("move");
             let {movedPathIndex,
                 movedTargetX,
                 movedTargetY} = this.state;
@@ -134,8 +129,7 @@ class BezierEditor extends React.Component {
         }
 
         if (mode === 'moveInitial') {
-            console.log("moveInitial");
-            this.props.onUpdate({
+           this.props.onUpdate({
                 movex: x,
                 movey: y
             });
