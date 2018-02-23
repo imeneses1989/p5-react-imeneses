@@ -23,21 +23,59 @@ export default class Path extends Vector {
     };
 
     buildPath = (object) => {
-        let {path} = object;
+        if(object.length) {
+            return this.buildPathWithCommands(object);
+        } else {
+            let {path} = object;
 
-        let curves = path.map(({x1, y1, x2, y2, x, y}, i) => (
-            `C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}`
-        ));
+            let curves = path.map(({x1, y1, x2, y2, x, y}, i) => (
+                `C ${x1} ${y1}, ${x2} ${y2}, ${x} ${y}`
+            ));
 
-        let instructions = [
-            `M ${object.movex} ${object.movey}`,
-            ...curves
-        ];
-
-        if (object.closed) {
-            instructions = [
-                ...instructions, 'Z'
+            let instructions = [
+                `M ${object.movex} ${object.movey}`,
+                ...curves
             ];
+
+            if (object.closed) {
+                instructions = [
+                    ...instructions, 'Z'
+                ];
+            }
+            return instructions.join('\n');
+        }
+    };
+
+    buildPathWithCommands = (commands) => {
+        let instructions = [];
+
+        for (let i = 0; i < commands.length; i += 1) {
+            const cmd = commands[i];
+            if (cmd.type === 'M') {
+                instructions = [
+                    ...instructions,
+                    `M ${cmd.x} ${cmd.y}`
+                ];
+            } else if (cmd.type === 'L') {
+                instructions = [
+                    ...instructions,
+                    `L ${cmd.x} ${cmd.y}`
+                ];
+            } else if (cmd.type === 'C') {
+                instructions = [
+                    ...instructions,
+                    `C ${cmd.x1} ${cmd.y1}, ${cmd.x2} ${cmd.y2}, ${cmd.x} ${cmd.y}`
+                ];
+            } else if (cmd.type === 'Q') {
+                instructions = [
+                    ...instructions,
+                    `Q ${cmd.x1} ${cmd.y1}, ${cmd.x} ${cmd.y}`
+                ];
+            } else if (cmd.type === 'Z') {
+                instructions = [
+                    ...instructions, 'Z'
+                ];
+            }
         }
 
         return instructions.join('\n');
@@ -50,15 +88,17 @@ export default class Path extends Vector {
     `;
     };
 
+
+
     render() {
         let {object} = this.props;
         let fill = (object.closed ? object.fill
-            : "transparent");
+            : "red");
         return (
-            <path style={this.getStyle(object)}
-                  {...this.getObjectAttributes()}
-                  d={this.buildPath(object)}
-                  fill={fill} />
-        );
+             <path style={this.getStyle(object)}
+                 {...this.getObjectAttributes()}
+                 d={this.buildPath(object)}
+                 fill={fill} />
+         );
     }
 }

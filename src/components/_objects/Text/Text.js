@@ -16,7 +16,7 @@ export default class Text extends Vector {
             textDecoration: "none",
             fill: "black",
             fontSize: 50,
-            fontFamily: "Helvetica",
+            fontFamily: "Dancing Script",
             lineheight: 1,
             width: 250,
             dominantBaseline: "hanging"

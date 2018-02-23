@@ -5,13 +5,13 @@ import PropertyGroup from '@od/react-preview/_panels/PropertyGroup';
 import SwitchState from '@od/react-preview/_panels/SwitchState';
 import Column from '@od/react-preview/_panels/Column';
 import Icon from '@od/react-preview/Icon';
+import {DefaultFonts} from '@od/react-preview/Fonts';
 
 export default class TextPanel extends Panel {
     constructor(props) {
         super(props);
-        this.state = {
-
-        }
+        //Initializing fonts
+        this.defaultFonts = DefaultFonts.getGroupFonts();
     }
 
     fontFamilies = [
@@ -57,18 +57,10 @@ export default class TextPanel extends Panel {
                         <select className="select-decorator"
                                 value={object.fontFamily}
                                 onChange={(e) => this.props.onChange('fontFamily', e.target.value)}  >
-                            {this.fontFamilies.map(([name, value]) =>
-                                <option key={value} value={value}>{name}</option>)}
+                            {this.defaultFonts.map((object, index) =>
+                                <option key={object.linkedDto} value={object.family}>{object.family}</option>)}
                         </select>
                     </Column>
-                   {/* <Column style={{"float": "right", marginRight: 10}}>
-                        <select className="select-decorator"
-                                value={object.fontFamily}
-                                onChange={(e) => this.props.onChange('fontFamily', e.target.value)}  >
-                            {this.fontFamilies.map(([name, value]) =>
-                                <option key={value} value={value}>{name}</option>)}
-                        </select>
-                    </Column>*/}
                     <div style={{marginTop: 25, paddingRight: 10, position: 'relative'}}>
                         <input className="input-decorator text-input"
                                onChange={(e) => this.props.onChange('text', e.target.value)}

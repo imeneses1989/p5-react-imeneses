@@ -61,7 +61,7 @@ export default class extends React.Component {
 
     renderPreview = (preview) => {
        return (<Preview
-           width={350} height={400}
+           width={this.state.productWidth} height={this.state.productHeight}
            objects={this.state.objects}
            style={preview.styles}
        />);
@@ -74,7 +74,7 @@ export default class extends React.Component {
             <div>
                 <Designer
                     ref={(ref) => this.designer = ref}
-                    width={600} height={600}
+                    width={this.state.productWidth} height={this.state.productHeight}
                     objects={this.state.objects}
                     onUpdate={this.handleUpdate}
                     />

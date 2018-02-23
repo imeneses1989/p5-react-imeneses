@@ -11,7 +11,10 @@ import Handler from '@od/react-preview/Handler';
 import {Dragger, Rotator, Scaler} from '@od/react-preview/_actions';
 import {Text, Path, Rect, Circle, Image} from '@od/react-preview/_objects';
 import PanelList from '@od/react-preview/_panels/PanelList';
+
 import SafeZone from '@od/react-preview/SafeZone';
+import {DefaultFonts, Fonts} from '@od/react-preview/Fonts';
+let opentype = require('opentype.js');
 
 class Designer extends React.Component {
     static defaultProps = {
@@ -44,8 +47,15 @@ class Designer extends React.Component {
             },
             currentObjectIndex: null,
             selectedObjectIndex: null,
+            textObjects: [],
             selectedTool: null,
             displaySafeZoneWarning: false
+        };
+
+        //Initializing fonts
+        this.defaultFonts = DefaultFonts;
+        if(this.props.fonts) {
+            this.defaultFonts.setFonts(this.props.fonts);
         }
     }
 
@@ -154,12 +164,20 @@ class Designer extends React.Component {
         };
 
         onUpdate([...objects, object]);
+
+        let textObj= null;
+        if(selectedTool === 'text') {
+            textObj = Object.assign({}, object);
+            textObj['index'] = objects.length;
+        }
+
         this.setState({
             currentObjectIndex: objects.length,
             selectedObjectIndex: objects.length,
             startPoint: this.getStartPointBundle(event, object),
             mode: meta.initEditor ? modes.EDIT_OBJECT : meta.mode,
-            selectedTool: null
+            selectedTool: null,
+            textObjects: textObj ? [...this.state.textObjects, textObj] : this.state.textObjects
         });
 
     };
@@ -398,6 +416,10 @@ class Designer extends React.Component {
         };
     };
 
+    getObjectsByType = (type, objects) => {
+       return objects.filter((object) => {return object.type === type});
+    };
+
     renderSVG = () => {
         let canvas = this.getCanvas();
         let {width, height, canvasOffsetX, canvasOffsetY} = canvas;
@@ -415,6 +437,7 @@ class Designer extends React.Component {
                 objectRefs={this.objectRefs}
                 onRender={(ref) => this.svgElement = ref}
                 onMouseDown={this.newObject.bind(this)} >
+                <Fonts textObjects={this.getObjectsByType('text', objects)} fonts={this.defaultFonts.getFonts()}/>
                 <SafeZone width={width}
                           height={height}
                           offset={this.props.safeZone.offset}
@@ -422,6 +445,23 @@ class Designer extends React.Component {
                           onRender={(ref) => this.safeZoneElement = ref}/>
             </SVGRenderer>
         );
+    };
+
+    getSVGShapeText = () => {
+        opentype.load(this.state.fonts[0].url, function(err, font) {
+            if (err) {
+                alert('Font could not be loaded: ' + err);
+            } else {
+                // Construct a Path object containing the letter shapes of the given text.
+                // The other parameters are x, y and fontSize.
+                // Note that y is the position of the baseline.
+                let path = font.getPath('Hello, World!', 0, 150, 72);
+                // If you just want to draw the text you can also use font.draw(ctx, text, x, y, fontSize).
+
+                this.setState({commands: path.commands});
+
+            }
+        }.bind(this));
     };
 
     getSVGElement = () => {
@@ -561,7 +601,6 @@ class Designer extends React.Component {
             insertMenu: InsertMenuComponent,
             background
         } = this.props;
-
 
         let currentObject = objects[selectedObjectIndex],
             isEditMode = mode === modes.EDIT_OBJECT,
